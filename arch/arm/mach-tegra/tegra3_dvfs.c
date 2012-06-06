@@ -49,7 +49,7 @@ static int cpu_below_core = VDD_CPU_BELOW_VDD_CORE;
 
 static struct dvfs_rail tegra3_dvfs_rail_vdd_cpu = {
 	.reg_id = "vdd_cpu",
-	.max_millivolts = 1275,
+	.max_millivolts = 1300,
 	.min_millivolts = 850,
 	.step = VDD_SAFE_STEP,
 	.jmp_to_zero = true,
@@ -444,7 +444,7 @@ static bool __init match_dvfs_one(struct dvfs *d, int speedo_id, int process_id)
 static int __init get_cpu_nominal_mv_index(
 	int speedo_id, int process_id, struct dvfs **cpu_dvfs)
 {
-	int i, j, mv;
+	int i, j, mv, nom_index;
 	struct dvfs *d;
 	struct clk *c;
 
@@ -461,8 +461,10 @@ static int __init get_cpu_nominal_mv_index(
 	}
 	BUG_ON(i == 0);
 	mv = cpu_millivolts[i - 1];
+    pr_info("cpu_nominal_mv: %i\n", mv);
 	BUG_ON(mv < tegra3_dvfs_rail_vdd_cpu.min_millivolts);
 	mv = min(mv, tegra_cpu_speedo_mv());
+    pr_info("cpu_nominal_mv_min: %i\n", mv);
 
 	/*
 	 * Find matching cpu dvfs entry, and use it to determine index to the
@@ -492,6 +494,7 @@ static int __init get_cpu_nominal_mv_index(
 		}
 	}
 
+    pr_info("dvfs: freqs_mult: %i\n", d->freqs_mult);
 
 	BUG_ON(i == 0);
 	if (j == (ARRAY_SIZE(cpu_dvfs_table) - 1))
@@ -502,7 +505,18 @@ static int __init get_cpu_nominal_mv_index(
 		       speedo_id, process_id, d->freqs[i-1] * d->freqs_mult);
 
 	*cpu_dvfs = d;
-	return (i - 1);
+
+    nom_index = i - 1;
+
+    pr_info("cpu_nominal_mv_index: %i\n", nom_index);
+	pr_info("cpu_dvfs->speedo_id: %i\n", d->speedo_id);
+	pr_info("cpu_dvfs->process_id: %i\n", d->process_id);
+	
+    for (i=0;i<MAX_DVFS_FREQS;i++) {
+	    pr_info("cpu_dvfs->freqs: %lu\n", d->freqs[i]);
+	}
+
+	return nom_index;
 }
 
 static int __init get_core_nominal_mv_index(int speedo_id)
