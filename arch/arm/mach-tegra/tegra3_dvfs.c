@@ -28,11 +28,16 @@
 #include "board.h"
 #include "tegra3_emc.h"
 
+#ifdef CONFIG_VOLTAGE_CONTROL
+int user_mv_table[MAX_DVFS_FREQS] = 
+    {800, 825, 850, 875, 900, 912, 975, 1000, 1025, 1050, 1075, 1100, 1125, 1150, 1175, 1200, 1212, 1237, 1250, 1275};
+#endif
+
 static bool tegra_dvfs_cpu_disabled;
 static bool tegra_dvfs_core_disabled;
 
 static const int cpu_millivolts[MAX_DVFS_FREQS] =
-	{800, 825, 850, 875, 900, 912, 925, 950, 975, 1000, 1025, 1050, 1075, 1100, 1125, 1150, 1200, 1237,1250,1275};
+	{800, 825, 850, 875, 900, 912, 925, 950, 975, 1000, 1025, 1050, 1075, 1100, 1125, 1150, 1200, 1237, 1250, 1275};
 
 static const int core_millivolts[MAX_DVFS_FREQS] =
 	{1000, 1050, 1100, 1150, 1200, 1250, 1300};
