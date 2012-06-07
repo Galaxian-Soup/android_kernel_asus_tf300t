@@ -46,15 +46,16 @@
 #include "pm.h"
 
 #include <linux/seq_file.h>
-
 #define SYSTEM_NORMAL_MODE	(0)
-#define SYSTEM_BALANCE_MODE				(1)
+#define SYSTEM_BALANCE_MODE	(1)
 #define SYSTEM_PWRSAVE_MODE	(2)
 #define SYSTEM_OVERCLOCK_0P1G_MODE		(3)
 #define SYSTEM_OVERCLOCK_0P2G_MODE		(4)
-#define SYSTEM_MODE_END 					(SYSTEM_OVERCLOCK_0P2G_MODE+1)
+#define SYSTEM_MODE_END 				(SYSTEM_OVERCLOCK_0P2G_MODE+1)
 #define SYSTEM_PWRSAVE_MODE_MAX_FREQ	(1000000)
-unsigned int power_mode_table[SYSTEM_MODE_END]={1000000,1200000,1400000,1500000,1600000};
+#define OC_FREQ1 (1600000)
+#define OC_FREQ2 (1700000)
+unsigned int power_mode_table[SYSTEM_MODE_END]={1000000,1200000,1400000,OC_FREQ1,OC_FREQ2};
 
 #define ASUS_OVERCLOCK
 #define CAMERA_ENABLE_EMC_MINMIAM_RATE (667000000)
@@ -1112,8 +1113,8 @@ void rebuild_max_freq_table(max_rate)
 	power_mode_table[SYSTEM_NORMAL_MODE]=max_rate;
 	power_mode_table[SYSTEM_BALANCE_MODE]=max_rate-200000;
 	power_mode_table[SYSTEM_PWRSAVE_MODE]=SYSTEM_PWRSAVE_MODE_MAX_FREQ;
-	power_mode_table[SYSTEM_OVERCLOCK_0P1G_MODE]=max_rate+100000;
-	power_mode_table[SYSTEM_OVERCLOCK_0P2G_MODE]=max_rate+200000;
+	power_mode_table[SYSTEM_OVERCLOCK_0P1G_MODE]=OC_FREQ1;
+	power_mode_table[SYSTEM_OVERCLOCK_0P2G_MODE]=OC_FREQ2;
 }
 
 static int tegra_cpu_init(struct cpufreq_policy *policy)
